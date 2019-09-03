@@ -1,0 +1,10 @@
+slots:
+ 5:
+  limit: 5
+  permission: 'none'
+ 10:
+  limit: 10
+  permission: 'lostparties.slots.10'
+ 15:
+  limit: 15
+  permission: 'lostparties.slots.15'
