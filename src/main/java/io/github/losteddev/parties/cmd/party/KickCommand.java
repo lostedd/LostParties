@@ -1,6 +1,7 @@
 package io.github.losteddev.parties.cmd.party;
 
 import org.bukkit.entity.Player;
+import io.github.losteddev.parties.Language;
 import io.github.losteddev.parties.api.Party;
 import io.github.losteddev.parties.cmd.SubCommand;
 
@@ -13,35 +14,35 @@ public class KickCommand extends SubCommand {
   @Override
   public void perform(Player player, String[] args) {
     if (args.length == 0) {
-      player.sendMessage("§cUse /party " + this.getUsage());
+      player.sendMessage(Language.command$kick$args);
       return;
     }
 
     String target = args[0];
     Party party = Party.getPartyByMember(player);
     if (party == null) {
-      player.sendMessage("§cYou aren't in a party.");
+      player.sendMessage(Language.command$kick$are_not_in_party);
       return;
     }
 
     if (!party.isOwner(player.getName())) {
-      player.sendMessage("§cOnly the Party Leader can kick members.");
+      player.sendMessage(Language.command$kick$only_the_leader_can_kick);
       return;
     }
 
     if (target.equalsIgnoreCase(player.getName())) {
-      player.sendMessage("§cYou can't kick yourself from party.");
+      player.sendMessage(Language.command$kick$cant_kick_yourself);
       return;
     }
 
     if (!party.contains(target)) {
-      player.sendMessage("§7" + target + " §aaren't member of your party.");
+      player.sendMessage(Language.command$kick$user_are_not_member_of_your_party.replace("{player}", target));
       return;
     }
 
     target = party.getCorrectName(target);
     party.kick(target);
-    party.broadcast("§d[Party] §7" + player.getName() + " §akicked §7" + target + " §afrom the party.");
+    party.broadcast(Language.command$kick$kicked.replace("{player}", target).replace("{owner}", player.getName()));
   }
 
   @Override

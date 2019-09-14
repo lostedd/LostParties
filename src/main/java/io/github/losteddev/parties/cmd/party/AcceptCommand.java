@@ -1,6 +1,7 @@
 package io.github.losteddev.parties.cmd.party;
 
 import org.bukkit.entity.Player;
+import io.github.losteddev.parties.Language;
 import io.github.losteddev.parties.api.Party;
 import io.github.losteddev.parties.cmd.SubCommand;
 
@@ -13,41 +14,41 @@ public class AcceptCommand extends SubCommand {
   @Override
   public void perform(Player player, String[] args) {
     if (args.length == 0) {
-      player.sendMessage("§cUse /party " + this.getUsage());
+      player.sendMessage(Language.command$accept$args);
       return;
     }
 
     String owner = args[0];
     if (owner.equalsIgnoreCase(player.getName())) {
-      player.sendMessage("§cYou can't accept party invites from yourself.");
+      player.sendMessage(Language.command$accept$cant_accept_from_yourself);
       return;
     }
 
     Party party = Party.getPartyByMember(player);
     if (party != null) {
-      player.sendMessage("§cYou already have a party.");
+      player.sendMessage(Language.command$accept$already_have_party);
       return;
     }
 
     party = Party.getPartyByOwner(owner);
     if (party == null) {
-      player.sendMessage("§7" + owner + " §anot are leader of a party.");
+      player.sendMessage(Language.command$accept$user_are_not_party_leader.replace("{player}", owner));
       return;
     }
 
     owner = party.getCorrectName(owner);
     if (!party.hasInvite(player.getName())) {
-      player.sendMessage("§7" + owner + " §anot have invited you to him party.");
+      player.sendMessage(Language.command$accept$user_not_invited_you.replace("{player}", owner));
       return;
     }
 
     if (party.getSize() >= party.getSlots()) {
-      player.sendMessage("§7" + owner + " §aParty is already full.");
+      player.sendMessage(Language.command$accept$user_party_is_full.replace("{player}", owner));
       return;
     }
 
     party.add(player.getName());
-    player.sendMessage("§aYou joined §7" + owner + "'s §aParty.");
+    player.sendMessage(Language.command$accept$accepted.replace("{player}", owner));
   }
 
   @Override

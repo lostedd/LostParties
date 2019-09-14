@@ -1,6 +1,7 @@
 package io.github.losteddev.parties.cmd.party;
 
 import org.bukkit.entity.Player;
+import io.github.losteddev.parties.Language;
 import io.github.losteddev.parties.api.Party;
 import io.github.losteddev.parties.cmd.SubCommand;
 
@@ -14,12 +15,13 @@ public class LeaveCommand extends SubCommand {
   public void perform(Player player, String[] args) {
     Party party = Party.getPartyByMember(player);
     if (party == null) {
-      player.sendMessage("§cYou aren't in a party.");
+      player.sendMessage(Language.command$leave$are_not_in_party
+          );
       return;
     }
 
     party.remove(player.getName());
-    player.sendMessage("§aYou left the party.");
+    player.sendMessage(Language.command$leave$left);
   }
 
   @Override

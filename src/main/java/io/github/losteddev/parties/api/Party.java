@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import com.google.common.collect.ImmutableList;
+import io.github.losteddev.parties.Language;
 import io.github.losteddev.parties.Main;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -38,7 +39,7 @@ public class Party {
   }
 
   public void delete() {
-    broadcast("§d[Party] §7" + this.getOwnerName() + " §adeleted the party!", false);
+    broadcast(Language.party$broadcast$deleted.replace("{player}", this.getOwnerName()), false);
     deleteParty(this);
   }
 
@@ -71,12 +72,12 @@ public class Party {
     invites.remove(player.toLowerCase());
     Player owner = Bukkit.getPlayerExact(this.getOwnerName());
     if (owner != null) {
-      owner.sendMessage("§d[Party] §7" + player + " §arejected your party invite.");
+      owner.sendMessage(Language.party$owner$player_reject.replace("{playeyr}", player));
     }
   }
 
   public void add(String player) {
-    broadcast("§d[Party] §7" + player + " §ajoined the party!");
+    broadcast(Language.party$broadcast$join.replace("{player}", player));
     members.add(new PartyPlayer(Bukkit.getPlayer(player), PartyRole.MEMBER));
     invites.remove(player.toLowerCase());
   }
@@ -85,10 +86,10 @@ public class Party {
     String owner = this.getOwnerName();
     members.remove(members.stream().filter(pp -> pp.getName().equals(member)).findFirst().get());
     if (members.size() > 0) {
-      broadcast("§d[Party] §7" + member + " §aleft the party!");
+      broadcast(Language.party$broadcast$leave.replace("{player}", member));
       if (owner.equals(member)) {
         members.get(0).changeRole(PartyRole.LEADER);
-        broadcast("§d[Party] §7" + this.getOwnerName() + " §ais the new Party Leader.");
+        broadcast(Language.party$broadcast$new_leaver_after_old_leader_leave.replace("{player}", this.getOwnerName()));
       }
     } else {
       deleteParty(this);
@@ -99,7 +100,7 @@ public class Party {
     Player target = null;
     this.members.remove(members.stream().filter(pp -> pp.getName().equals(member)).findFirst().get());
     if ((target = Bukkit.getPlayerExact(member)) != null) {
-      target.sendMessage("§d[Party] §7" + this.getOwnerName() + " §aKicked you from him party.");
+      target.sendMessage(Language.party$member$kick.replace("{player}", this.getOwnerName()));
     }
   }
 
@@ -134,7 +135,7 @@ public class Party {
       if (entry.getValue() < System.currentTimeMillis()) {
         Player player = Bukkit.getPlayer(entry.getKey());
         if (player != null) {
-          player.sendMessage(" \n§aYou party invite from §7" + this.getOwnerName() + " §ahas expired!\n ");
+          player.sendMessage(Language.party$member$invite_expires.replace("{player}", this.getOwnerName()));
         }
         itr.remove();
       }
