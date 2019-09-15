@@ -4,6 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import io.github.losteddev.parties.api.PartySlots;
 import io.github.losteddev.parties.cmd.PartyCommand;
 import io.github.losteddev.parties.utils.LostLogger;
+import io.github.losteddev.parties.utils.SpigotUpdater;
 import io.github.losteddev.parties.utils.LostLogger.LostLevel;
 
 public class Main extends JavaPlugin {
@@ -22,6 +23,7 @@ public class Main extends JavaPlugin {
     PartySlots.setupSlots();
     Language.setupLanguage();
     
+    this.getServer().getScheduler().runTask(this, () -> new SpigotUpdater(this, 70988));
     LOGGER.log(LostLevel.INFO, "The plugin has been enabled!");
   }
 
