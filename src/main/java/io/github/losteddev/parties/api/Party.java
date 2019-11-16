@@ -23,6 +23,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class Party {
 
   private int slots;
+  private PartyPlayer owner;
   private Map<String, Long> invites;
   private List<PartyPlayer> members;
 
@@ -30,12 +31,14 @@ public class Party {
     this.members = new ArrayList<>();
     this.invites = new ConcurrentHashMap<>();
     this.slots = PartySlots.getSlots(player);
-    this.members.add(new PartyPlayer(player, PartyRole.LEADER));
+    this.owner = new PartyPlayer(player, PartyRole.LEADER);
+    this.members.add(this.owner);
   }
-  
+
   public void transfer(String leader) {
-    members.stream().filter(pp->pp.getName().equals(getOwnerName())).findFirst().get().changeRole(PartyRole.MEMBER);
-    members.stream().filter(pp -> pp.getName().equals(leader)).findFirst().get().changeRole(PartyRole.LEADER);
+    this.owner.changeRole(PartyRole.MEMBER);
+    this.owner = members.stream().filter(pp -> pp.getName().equals(leader)).findFirst().get();
+    this.owner.changeRole(PartyRole.LEADER);
   }
 
   public void delete() {
@@ -64,7 +67,7 @@ public class Party {
     for (BaseComponent cl : click) {
       init[init.length - 1].addExtra(cl);
     }
-    
+
     target.spigot().sendMessage(init);
   }
 
@@ -72,7 +75,7 @@ public class Party {
     invites.remove(player.toLowerCase());
     Player owner = Bukkit.getPlayerExact(this.getOwnerName());
     if (owner != null) {
-      owner.sendMessage(Language.party$owner$player_reject.replace("{playeyr}", player));
+      owner.sendMessage(Language.party$owner$player_reject.replace("{player}", player));
     }
   }
 
@@ -88,7 +91,8 @@ public class Party {
     if (members.size() > 0) {
       broadcast(Language.party$broadcast$leave.replace("{player}", member));
       if (owner.equals(member)) {
-        members.get(0).changeRole(PartyRole.LEADER);
+        this.owner = members.get(0);
+        this.owner.changeRole(PartyRole.LEADER);
         broadcast(Language.party$broadcast$new_leaver_after_old_leader_leave.replace("{player}", this.getOwnerName()));
       }
     } else {
@@ -160,11 +164,16 @@ public class Party {
   }
 
   public String getOwnerName() {
-    return members.stream().filter(member -> member.getRole().equals(PartyRole.LEADER)).findAny().get().getName();
+    return this.owner.getName();
   }
 
   public String getCorrectName(String player) {
-    return members.stream().filter(member -> member.getName().equalsIgnoreCase(player)).findFirst().get().getName();
+    PartyPlayer target = this.members.stream().filter(member -> member.getName().equalsIgnoreCase(player)).findFirst().orElse(null);
+    if (target != null) {
+      return target.getName();
+    }
+
+    return player;
   }
 
   public boolean hasInvite(String player) {
